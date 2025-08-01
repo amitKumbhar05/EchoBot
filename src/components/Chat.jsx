@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import ChatBubble from './ChatBubble'
 import Swal from 'sweetalert2'
+import { FiSend } from 'react-icons/fi'
 
 const Chat = () => {
   const [promptText, setPromptText] = useState('')
@@ -48,21 +49,34 @@ const Chat = () => {
       });
     }
   }
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      getAnswer(e);
+    }
+  }
   return (
-    <div>
-      <div className='h-screen flex flex-col'>
-        <div className='flex-1' id='content'>
-          {messages && (
-            messages.map((message, index) => (
-              <div ref={lastMessageRef} key={index}>
-                <ChatBubble content={message.content} type={message.type} />
-              </div>
-            ))
-          )}
-        </div>
-        <form onSubmit={getAnswer} className='flex w-full'>
-          <input type="text" value={promptText} onChange={(e) => setPromptText(e.target.value)} placeholder="Type here" className="input input-bordered flex-1 mr-2" />
-          <button type='submit' className='btn mr-2 w-28'>Send</button>
+    <div className="flex-1 flex flex-col bg-base-200">
+      <div className="flex-1 overflow-y-auto p-4 scrollbar">
+        {messages &&
+          messages.map((message, index) => (
+            <div ref={lastMessageRef} key={index}>
+              <ChatBubble content={message.content} type={message.type} />
+            </div>
+          ))}
+      </div>
+      <div className="sticky bottom-0 p-4 bg-base-100">
+        <form onSubmit={getAnswer} className="flex">
+          <textarea
+            value={promptText}
+            onChange={(e) => setPromptText(e.target.value)}
+            placeholder="Type here"
+            className="textarea textarea-bordered flex-1 mr-2 resize-none"
+            onKeyDown={handleKeyDown}
+          />
+          <button type="submit" className="btn btn-primary">
+            <FiSend className="mr-2" /> Send
+          </button>
         </form>
       </div>
     </div>
